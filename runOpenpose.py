@@ -5,7 +5,7 @@ from torch import from_numpy, jit
 from openpose_modules.keypoints import extract_keypoints, group_keypoints
 from openpose_modules.pose import Pose
 from action_detect.detect import action_detect
-import os
+import os,time
 from math import ceil, floor
 from utils.contrastImg import coincide
 
@@ -166,21 +166,21 @@ def run_demo(net, action_net, image_provider, height_size, cpu, boxList):
                 pose = action_detect(action_net, pose, crown_proportion)  # 判断摔倒还是正常
 
                 if pose.pose_action == 'fall':
-                    cv2.rectangle(img, (pose.bbox[0], pose.bbox[1]),
-                                  (pose.bbox[0] + pose.bbox[2], pose.bbox[1] + pose.bbox[3]), (0, 0, 255), thickness=3)
-                    cv2.putText(img, 'state: {}'.format(pose.pose_action), (pose.bbox[0], pose.bbox[1] - 16),
-                                cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255))
+                    # cv2.rectangle(img, (pose.bbox[0], pose.bbox[1]),
+                    #               (pose.bbox[0] + pose.bbox[2], pose.bbox[1] + pose.bbox[3]), (0, 0, 255), thickness=3)
+                    # cv2.putText(img, 'state: {}'.format(pose.pose_action), (pose.bbox[0], pose.bbox[1] - 16),
+                    #             cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255))
                     fallFlag = 1
                 else:
-                    cv2.rectangle(img, (pose.bbox[0], pose.bbox[1]),
-                                  (pose.bbox[0] + pose.bbox[2], pose.bbox[1] + pose.bbox[3]), (0, 255, 0))
-                    cv2.putText(img, 'state: {}'.format(pose.pose_action), (pose.bbox[0], pose.bbox[1] - 16),
-                                cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0))
-                    # fallFlag = 1
-            # if fallFlag == 1:
-            #     t = time.time()
-            #     cv2.imwrite(f'C:/zqr/project/yolov5_openpose/Image/{t}.jpg', img)
-            #     print('我保存照片了')
+                    # cv2.rectangle(img, (pose.bbox[0], pose.bbox[1]),
+                    #               (pose.bbox[0] + pose.bbox[2], pose.bbox[1] + pose.bbox[3]), (0, 255, 0))
+                    # cv2.putText(img, 'state: {}'.format(pose.pose_action), (pose.bbox[0], pose.bbox[1] - 16),
+                    #             cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0))
+                    fallFlag = 1
+            if fallFlag == 1:
+                t = time.time()
+                cv2.imwrite(f'E:/E/pose/Image/{t}.jpg', img)
+                print('我保存照片了')
 
             img = cv2.addWeighted(orig_img, 0.6, img, 0.4, 0)
             # 保存识别后的照片
@@ -200,12 +200,12 @@ def detect_main(video_name=''):
     parser.add_argument('--checkpoint-path', type=str, default='openpose.jit',
                         help='path to the checkpoint')
     parser.add_argument('--height-size', type=int, default=256, help='network input layer height size')
-    parser.add_argument('--video', type=str, default='', help='path to video file or camera id')
+    parser.add_argument('--video', type=str, default='E:\\E\\pose\\cam3.avi', help='path to video file or camera id')
     parser.add_argument('--images', nargs='+',
-                        default='D:\\project\\ism_person_openpose\\data\\pics',
+                        default='E:\\\E\\pose\\ism_person_openpose\\data\\pics',
                         help='path to input image(s)')
     parser.add_argument('--cpu', action='store_true', help='run network inference on cpu')
-    parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
     parser.add_argument('--code_name', type=str, default='None', help='the name of video')
     # parser.add_argument('--track', type=int, default=0, help='track pose id in video')
@@ -230,7 +230,7 @@ def detect_main(video_name=''):
         images_dir = []
         if os.path.isdir(args.images):
             for img_dir in os.listdir(args.images):
-                images_dir.append(os.path.join(args.images, img_dir))
+                    images_dir.append(os.path.join(args.images, img_dir))
             frame_provider = ImageReader(images_dir)
         else:
             img = cv2.imread(args.images, cv2.IMREAD_COLOR)

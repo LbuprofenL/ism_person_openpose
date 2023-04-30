@@ -122,7 +122,7 @@ class Pose:
         if is_save:
             t = time.time()
             t = int(round(t * 1000))
-            cv2.imwrite(f'D:/project/ism_person_openpose/data/train/{t}.jpg',I)
+            cv2.imwrite(f'E:/pose/ism_person_openpose/data/train/{t}.jpg',I)
         # **************************************
 
         return I
